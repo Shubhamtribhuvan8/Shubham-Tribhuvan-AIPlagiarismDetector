@@ -17,27 +17,21 @@ const UserScreen = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
+    const apiUploadUrl = `${process.env.REACT_APP_API_URL}/api/upload`;
     // const formData = new FormData();
     // formData.append("document", file);
 
     try {
       // Replace the endpoint with your actual API endpoint
-      const response = await axios.post(
-        "http://localhost:8080/api/upload", // Replace with your server URL
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(apiUploadUrl, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      // Fetch the report using the reportId returned from the upload
       const reportId = response.data.data.fileId;
-      console.log(response);
-      const reportResponse = await axios.get(
-        `http://localhost:8080/api/report/${reportId}`
-      ); // Replace with your server URL
+      const apiUrl = `${process.env.REACT_APP_API_URL}/api/report/${reportId}`;
+      const reportResponse = await axios.get(apiUrl);
       setResult(reportResponse.data.data);
     } catch (error) {
       console.log(error, "errror");

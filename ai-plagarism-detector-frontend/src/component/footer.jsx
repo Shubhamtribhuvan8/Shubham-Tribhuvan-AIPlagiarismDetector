@@ -7,7 +7,8 @@ const Footer = () => {
       <div id="contact" className="bg-gray-100 py-6">
         <div className="container mx-auto text-center">
           <p className="text-sm text-gray-600">
-            © {new Date().getFullYear()} PlagiarismGuard. All rights reserved.
+            © {new Date().getFullYear()} AI Plagiarism Detector. All rights
+            reserved.
           </p>
           <div className="mt-1">
             <a href="#" className="text-gray-600 mx-2 hover:underline">
