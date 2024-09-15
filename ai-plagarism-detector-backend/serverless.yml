@@ -1,0 +1,26 @@
+service: plagiarism-detector-backend
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+
+functions:
+  app:
+    handler: index.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+
+plugins:
+  - serverless-offline
+
+package:
+  exclude:
+    - node_modules/**
+    - uploads/**
+
+custom:
+  serverless-offline:
+    httpPort: 3000
