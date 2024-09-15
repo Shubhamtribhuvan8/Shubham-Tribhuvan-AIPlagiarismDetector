@@ -1,0 +1,65 @@
+# Node.js modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Optional npm cache directory
+.npm/
+
+# Typescript
+*.tsbuildinfo
+
+# Dependency directories
+jspm_packages/
+
+# Optional REPL history
+.node_repl_history
+
+# Package lock files
+package-lock.json
+yarn.lock
+
+# Coverage directory used by testing tools
+coverage/
+
+# Build output directories
+build/
+dist/
+
+# Temporary files
+tmp/
+temp/
+
+# IDE specific files (Optional, adjust based on your preferences)
+.vscode/
+.idea/
+
+# ESLint cache
+.eslintcache
+
+# MacOS generated files
+*.DS_Store
+
+# Windows generated files
+*.stackdump
+
+# Firebase files (if you're using Firebase in the project)
+.firebase/
+firestore.rules.bak
+
+# Log files from Ionic/Capacitor (if you're using Ionic)
+capacitor.config.ts
+
+# Ignore additional files based on your project setup
