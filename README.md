@@ -33,7 +33,7 @@ Run the React app locally:
 Frontend Environment Variables:
 
 Create a .env file in the frontend directory with the following variables:
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:8080
 
 Access the application:
 The React application should now be running at http://localhost:3000.
@@ -70,7 +70,7 @@ Run the Node.js server:
 ```npm start```
 
 API Endpoints:
-The backend server will be running on ```http://localhost:5000```.
+The backend server will be running on ```http://localhost:8080```.
 
 The main endpoint is:
 ``POST /api/plagiarism-check: Accepts a document (PDF/Word) and returns the plagiarism report using AI processing.``
