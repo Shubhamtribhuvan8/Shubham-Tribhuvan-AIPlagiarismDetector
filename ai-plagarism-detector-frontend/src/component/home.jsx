@@ -10,7 +10,6 @@ export const Home = (props) => {
       <div className="flex flex-col min-h-screen">
         <main className="flex-1 pt-20 md:pt-24 lg:pt-32">
           {" "}
-          {/* Add padding-top */}
           <Suspense fallback={<Spinner />}>
             <HeroSection />
           </Suspense>

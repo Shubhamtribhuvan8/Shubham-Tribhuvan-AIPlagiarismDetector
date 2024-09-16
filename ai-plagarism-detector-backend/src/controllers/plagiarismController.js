@@ -5,6 +5,7 @@ const FormData = require("form-data");
 const { createResponse } = require("../services/responseService");
 const { v4: uuidv4 } = require("uuid");
 const pdfParse = require("pdf-parse");
+const fetch = require("node-fetch");
 const mammoth = require("mammoth");
 require("dotenv").config();
 const reports = {};
@@ -145,7 +146,6 @@ async function analyzeTextForPlagiarism(text) {
   }
 }
 
-// Retrieve the plagiarism report based on the file ID
 exports.getPlagiarismReport = async (req, res) => {
   try {
     const { id } = req.params;
@@ -210,5 +210,70 @@ exports.testApi = async (req, res) => {
       status: "error",
       message: "Internal Server Error",
     });
+  }
+};
+
+exports.plagariseApi = async (req, res) => {
+  const { text: inputText, website, version, language, country } = req.body;
+  let file = req.file;
+
+  let extractedText = inputText || "";
+  if (file) {
+    if (file.mimetype === "application/pdf") {
+      const pdfBuffer = fs.readFileSync(file.path);
+      const pdfData = await pdfParse(pdfBuffer);
+      extractedText = pdfData.text;
+    } else if (
+      file.mimetype ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      const docxBuffer = fs.readFileSync(file.path);
+      const docxData = await mammoth.extractRawText({ buffer: docxBuffer });
+      extractedText = docxData.value;
+    }
+  }
+
+  if (extractedText.length < 300) {
+    return res.status(400).json({
+      statusCode: 400,
+      message: "Text must be at least 300 characters long.",
+    });
+  }
+
+  const formData = new FormData();
+  formData.append("text", extractedText);
+  formData.append("website", website || "");
+  formData.append("version", version || "");
+  formData.append("language", language || "");
+
+  if (file) {
+    formData.append("file", fs.createReadStream(file.path), file.originalname);
+  }
+
+  const token = process.env.GO_WINSTON_API_KEY;
+
+  let text = extractedText;
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text, file, website, language, country }),
+  };
+
+  try {
+    const response = await fetch(
+      "https://api.gowinston.ai/v2/plagiarism",
+      options
+    );
+    const data = await response.json();
+    if (data.error) {
+      return res.status(400).json(data);
+    }
+    res.json(data);
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

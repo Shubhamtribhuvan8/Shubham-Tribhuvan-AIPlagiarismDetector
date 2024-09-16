@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import Button from "./ui/button";
 
+//TODO: NO CHAT GPT/CLOUD AI API TOKEN CREDITIALS
 const UserScreen = () => {
+  let API = process.env.REACT_APP_API_URL;
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,12 +19,9 @@ const UserScreen = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
-    const apiUploadUrl = `${process.env.REACT_APP_API_URL}/api/upload`;
-    // const formData = new FormData();
-    // formData.append("document", file);
+    const apiUploadUrl = `${API}/api/upload`;
 
     try {
-      // Replace the endpoint with your actual API endpoint
       const response = await axios.post(apiUploadUrl, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -30,7 +29,7 @@ const UserScreen = () => {
       });
 
       const reportId = response.data.data.fileId;
-      const apiUrl = `${process.env.REACT_APP_API_URL}/api/report/${reportId}`;
+      const apiUrl = `${API}/api/report/${reportId}`;
       const reportResponse = await axios.get(apiUrl);
       setResult(reportResponse.data.data);
     } catch (error) {
@@ -44,8 +43,6 @@ const UserScreen = () => {
 
   const handleDownload = () => {
     if (!result) return alert("No report available to download");
-
-    // Create a Blob from the result data
     const blob = new Blob([JSON.stringify(result, null, 2)], {
       type: "application/json",
     });

@@ -15,14 +15,20 @@ let storage = multer.diskStorage({
   },
 });
 
-let upload = multer({
+const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
+    const allowedMimeTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDFs are allowed"));
+      cb(new Error("Only PDFs and DOCs are allowed"), false);
     }
   },
 });
@@ -37,5 +43,11 @@ router.post(
 router.get("/report/:id", plagiarismController.getPlagiarismReport);
 
 router.get("/test", plagiarismController.testApi);
+
+router.post(
+  "/plagiarism-report",
+  upload.single("file"),
+  plagiarismController.plagariseApi
+);
 
 module.exports = router;

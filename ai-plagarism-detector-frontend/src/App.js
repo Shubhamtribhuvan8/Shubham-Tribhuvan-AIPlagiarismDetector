@@ -7,6 +7,9 @@ import Footer from "./component/footer";
 import HeroSection from "./component/heroSection";
 import UserScreen from "./component/userScreen";
 import JsonData from "./data/data.json";
+import AIUserScreen from "./component/aiUserScreen";
+import NotFound from "./component/pageNotFound";
+import PlagiarismReport from "./component/plagiarismReports";
 
 const App = () => {
   const [landingPageData, setLandingPageData] = useState({});
@@ -20,7 +23,10 @@ const App = () => {
         <Navigation />
         <Routes>
           <Route path="/" element={<LandingPage data={landingPageData} />} />
-          <Route path="/user-screen" element={<UserScreen />} />
+          <Route path="/user" element={<UserScreen />} />
+          <Route path="/user-screen" element={<AIUserScreen />} />
+          <Route path="/reports" element={<PlagiarismReport />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>

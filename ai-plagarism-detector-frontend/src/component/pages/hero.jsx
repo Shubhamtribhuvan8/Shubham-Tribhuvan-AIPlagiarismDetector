@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../ui/button";
 import Input from "../ui/input";
 import { ArrowRight } from "lucide-react";
 
 const HeroSection = () => {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+  const handleMoreInfo = () => {
+    setSubmitted(false);
+  };
+
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
       <div className="container px-4 md:px-6">
@@ -19,17 +30,39 @@ const HeroSection = () => {
           </div>
           <div className="w-full max-w-sm mx-auto p-4">
             <div className="space-y-2">
-              <form className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                <Input
-                  className="flex-1"
-                  placeholder="Enter your email"
-                  type="email"
-                />
-                <Button type="submit" size="sm" className="flex-shrink-0">
-                  <span>Get Started</span>
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
+              {!submitted ? (
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
+                >
+                  <Input
+                    className="flex-1"
+                    placeholder="Enter your email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                  <Button type="submit" size="sm" className="flex-shrink-0">
+                    <span>Get Started</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </form>
+              ) : (
+                <div className="text-green-600 font-semibold flex flex-col items-center">
+                  <p>
+                    Thank you for your interest! We'll reach out to you within
+                    the day.
+                  </p>
+                  <Button
+                    onClick={handleMoreInfo}
+                    size="sm"
+                    className="mt-4 py-2 px-4 font-semibold rounded-lg flex-shrink-0"
+                  >
+                    Request More Information
+                  </Button>
+                </div>
+              )}
               <p className="text-xs text-gray-500 dark:text-gray-400 text-center sm:text-center">
                 Start your free trial. No credit card required.
               </p>
