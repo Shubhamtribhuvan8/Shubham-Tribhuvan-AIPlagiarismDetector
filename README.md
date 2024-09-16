@@ -9,37 +9,46 @@ User-Friendly Interface: Simple and intuitive UI designed for educational instit
 Responsive Design: Fully responsive and works seamlessly on desktop, tablet, and mobile devices.
 Downloadable Reports: Get plagiarism reports with highlighted flagged sections and percentage of plagiarized content.
 
-# Frontend Setup (React)
-
+Frontend Setup (React)
 Prerequisites
 Node.js: Ensure you have Node.js installed (v16 or above).
 npm: Comes with Node.js; used to install dependencies.
-
 Installation
 Clone the repository:
 
+bash
+Copy code
 git clone https://github.com/USERNAME/AIPlagiarismDetector.git
 cd AIPlagiarismDetector
-
 Navigate to the frontend directory:
+
+bash
+Copy code
 cd frontend
-
 Install dependencies:
+
+bash
+Copy code
 npm install
+Run the React app locally:
 
-Run the React app locally
+bash
+Copy code
 npm start
+Frontend Environment Variables:
 
-Frontend Environment Variables: Create a .env file in the frontend directory with the following variables:
+Create a .env file in the frontend directory with the following variables:
+plaintext
+Copy code
 REACT_APP_API_URL=http://localhost:5000
-
 Access the application:
-The React application should now be running at http://localhost:3000.
 
+The React application should now be running at http://localhost:3000.
 Technologies Used
 React: A JavaScript library for building user interfaces.
 Axios: For making API requests.
 Tailwind CSS: For styling and ensuring responsiveness.
+
 
 # Backend Setup (Node.js with AI API Integration)
 
