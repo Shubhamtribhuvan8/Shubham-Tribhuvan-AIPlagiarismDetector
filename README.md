@@ -24,7 +24,8 @@ Node.js: Ensure you have Node.js installed (v16 or above).
 
 npm: Comes with Node.js; used to install dependencies.
 
--Installation
+# Installation
+
 Clone the repository:
 
 ```git clone https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector```
@@ -76,7 +77,7 @@ Created with gowinston.ai:
 
 The plagiarism detection system has been integrated using the gowinston.ai API for accuracy and real-time results.
 
--Installation
+# Installation
 
 Navigate to the backend directory:
 
@@ -105,38 +106,13 @@ The main endpoint is:
 
 ### Vercel Deployment
 
-Deploying to Vercel
+# Deploying to Vercel
 
 This project has been deployed to Vercel. You can access the live version via this link[https://shubham-tribhuvan-ai-plagiarism-detector-7eo2492du.vercel.app/].
 
 To redeploy or deploy updates, push the changes to the GitHub repository, and Vercel will automatically trigger the deployment.
 
 ### Folder Structure
-
-│
-├── frontend/             # React frontend code
-
-│   ├── public/           # Public assets
-
-│   ├── src/              # Main source code (components, hooks, styles)
-
-│   ├── .env              # Environment variables for frontend
-
-│   └── package.json      # React dependencies and scripts
-
-│
-├── backend/              # Node.js backend code
-
-│   ├── controllers/      # API logic and ChatGPT integration
-
-│   ├── routes/           # Backend API routes
-
-│   ├── .env              # Environment variables for backend
-
-│   └── package.json      # Node.js dependencies and scripts
-
-│
-└── README.md             # Project documentation
 
 Clone the repository:
 
