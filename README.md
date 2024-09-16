@@ -16,34 +16,26 @@ npm: Comes with Node.js; used to install dependencies.
 Installation
 Clone the repository:
 
-bash
-Copy code
 git clone https://github.com/USERNAME/AIPlagiarismDetector.git
 cd AIPlagiarismDetector
+
 Navigate to the frontend directory:
-
-bash
-Copy code
 cd frontend
+
 Install dependencies:
-
-bash
-Copy code
 npm install
-Run the React app locally:
 
-bash
-Copy code
+Run the React app locally:
 npm start
+
 Frontend Environment Variables:
 
 Create a .env file in the frontend directory with the following variables:
-plaintext
-Copy code
 REACT_APP_API_URL=http://localhost:5000
-Access the application:
 
+Access the application:
 The React application should now be running at http://localhost:3000.
+
 Technologies Used
 React: A JavaScript library for building user interfaces.
 Axios: For making API requests.
