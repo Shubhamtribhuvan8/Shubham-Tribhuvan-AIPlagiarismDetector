@@ -1,18 +1,19 @@
 # Shubham-Tribhuvan-AIPlagiarismDetector
 ## [Deployment Link](https://shubham-tribhuvan-ai-plagiarism-detector-7eo2492du.vercel.app)
 
-# AI Plagiarism Detector
+### AI Plagiarism Detector
 A full-stack AI-powered plagiarism detection platform that allows users to upload documents (PDF, Word) and get real-time plagiarism detection results using ChatGPT/Claude. This project demonstrates full-stack development skills by integrating AI tools and React, with deployment on Vercel.
 
-## Features
+### Features
 Real-time Plagiarism Detection: Upload documents and receive AI-generated plagiarism reports.
 AI API Integration: Powered by ChatGPT/Claude for accurate content analysis.
 User-Friendly Interface: Simple and intuitive UI designed for educational institutions.
 Responsive Design: Fully responsive and works seamlessly on desktop, tablet, and mobile devices.
 Downloadable Reports: Get plagiarism reports with highlighted flagged sections and percentage of plagiarized content.
 
-Frontend Setup (React)
+### Frontend Setup (React)
 Prerequisites
+
 Node.js: Ensure you have Node.js installed (v16 or above).
 npm: Comes with Node.js; used to install dependencies.
 Installation
@@ -44,7 +45,7 @@ Axios: For making API requests.
 Tailwind CSS: For styling and ensuring responsiveness.
 
 
-# Backend Setup (Node.js with AI API Integration)
+### Backend Setup (Node.js with AI API Integration)
 
 Prerequisites
 Node.js: Ensure you have Node.js installed (v16 or above).
@@ -81,7 +82,7 @@ Deploying to Vercel
 This project has been deployed to Vercel. You can access the live version via this link.
 To redeploy or deploy updates, push the changes to the GitHub repository, and Vercel will automatically trigger the deployment.
 
-## Folder Structure
+### Folder Structure
 
 │
 ├── frontend/             # React frontend code
