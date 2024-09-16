@@ -1,4 +1,6 @@
 # Shubham-Tribhuvan-AIPlagiarismDetector
+## [Deployment Link](https://shubham-tribhuvan-ai-plagiarism-detector-7eo2492du.vercel.app)
+
 # AI Plagiarism Detector
 A full-stack AI-powered plagiarism detection platform that allows users to upload documents (PDF, Word) and get real-time plagiarism detection results using ChatGPT/Claude. This project demonstrates full-stack development skills by integrating AI tools and React, with deployment on Vercel.
 
@@ -16,17 +18,17 @@ npm: Comes with Node.js; used to install dependencies.
 Installation
 Clone the repository:
 
-git clone https://github.com/USERNAME/AIPlagiarismDetector.git
-cd AIPlagiarismDetector
+```git clone https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector```
+
 
 Navigate to the frontend directory:
-cd frontend
+```cd ai-plagarism-detector-frontend```
 
 Install dependencies:
-npm install
+```npm install```
 
 Run the React app locally:
-npm start
+```npm start```
 
 Frontend Environment Variables:
 
@@ -51,10 +53,10 @@ OpenAI API Key: You need an OpenAI API key to integrate ChatGPT for plagiarism d
 
 Installation
 Navigate to the backend directory:
-cd backend
+```cd ai-plagarism-detector-backend```
 
 Install dependencies:
-npm install
+```npm install```
 
 Backend Environment Variables: Create a .env file in the backend directory with the following variables:
 PORT=5000
@@ -65,13 +67,13 @@ CHAT_GPT_API_URL=https://api.openai.com/v1/files
 GO_WINSTON_API_KEY=
 
 Run the Node.js server:
-npm start
+```npm start```
 
 API Endpoints:
-The backend server will be running on http://localhost:5000.
+The backend server will be running on ```http://localhost:5000```.
 
 The main endpoint is:
-POST /api/plagiarism-check: Accepts a document (PDF/Word) and returns the plagiarism report using AI processing.
+``POST /api/plagiarism-check: Accepts a document (PDF/Word) and returns the plagiarism report using AI processing.``
 
 
 Vercel Deployment
@@ -96,7 +98,6 @@ To redeploy or deploy updates, push the changes to the GitHub repository, and Ve
 │
 └── README.md             # Project documentation
 
-How to Run Locally
 Clone the repository:
 
-git clone https://github.com/USERNAME/AIPlagiarismDetector.git
+git clone [https://github.com/USERNAME/AIPlagiarismDetector.git](https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector)
