@@ -58,9 +58,9 @@ Run the React app locally:
 
 ### Backend Setup (Node.js with AI API Integration)
 
--Prerequisites
+### Prerequisites
 
-# Node.js: Ensure you have Node.js installed (v16 or above).
+* Node.js: Ensure you have Node.js installed (v16 or above).
 
 npm: Used to install backend dependencies.
 
