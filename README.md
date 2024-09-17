@@ -1,5 +1,6 @@
 # Shubham-Tribhuvan-AIPlagiarismDetector
 ## [Deployment Link](https://shubham-tribhuvan-ai-plagiarism-detector-7eo2492du.vercel.app)
+## [DEMO VIDEO](https://www.loom.com/share/7abd1b595f3f45df84af4554df90240b?sid=e4dc6143-b658-4b58-b8a6-9bee6af3965f)
 
 ### AI Plagiarism Detector
 A full-stack AI-powered plagiarism detection platform that allows users to upload documents (PDF, Word) and get real-time plagiarism detection results using 
