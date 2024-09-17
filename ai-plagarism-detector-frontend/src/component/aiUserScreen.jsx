@@ -4,7 +4,7 @@ import PlagiarismReport from "./plagiarismReports";
 import Spinner from "./ui/spinner";
 import Button from "./ui/button";
 const AIUserScreen = () => {
-  const API = process.env.REACT_APP_API_URL;
+  let API = process.env.REACT_APP_API_URL;
   const [text, setText] = useState("");
   const [website, setWebsite] = useState("");
   const [version, setVersion] = useState("");
@@ -59,6 +59,7 @@ const AIUserScreen = () => {
     };
 
     try {
+      console.log(API, `${API}/api/plagiarism-report`);
       const res = await fetch(`${API}/api/plagiarism-report`, options);
       const result = await res.json();
       setResponse(result);
@@ -70,30 +71,20 @@ const AIUserScreen = () => {
   };
   const handleDownload = () => {
     if (response) {
-      generatePdf(response);
+      generatePdf(response.data, response.averagePlagiarismPercentage);
     }
   };
-  const generatePdf = (data) => {
+  const generatePdf = (data, percentage) => {
     console.log(data);
 
     const doc = new jsPDF();
-    // Remove custom font addition to see if this resolves the issue
-    // doc.addFont("Helvetica", "Helvetica", "normal"); // Comment this line
-
     doc.setLineWidth(0.5);
 
     doc.setFontSize(16);
     doc.text("Plagiarism Report", 20, 20);
-    const totalPlagiarismWords = data.totalPlagiarismWords || 0;
-    const textWordCounts = data.textWordCounts || 1;
-    const plagiarismPercentage = (totalPlagiarismWords / textWordCounts) * 100;
-
-    const percentageText = isNaN(plagiarismPercentage)
-      ? "N/A"
-      : plagiarismPercentage.toFixed(2);
 
     doc.setFontSize(12);
-    doc.text(`Plagiarism Percentage: ${percentageText}%`, 20, 30);
+    doc.text(`Plagiarism Percentage: ${percentage}%`, 20, 30);
 
     if (data.scanInformation) {
       doc.text(
@@ -181,7 +172,7 @@ const AIUserScreen = () => {
                   <p className="text-lg text-gray-700 mb-4">
                     Plagiarism Percentage:{" "}
                     <span className="font-bold">
-                      {response.percentage || 0}%
+                      {response?.averagePlagiarismPercentage || 0}%
                     </span>
                   </p>
                   <Button
@@ -215,7 +206,7 @@ const AIUserScreen = () => {
           )}
         </div>
       </div>
-      {response && <PlagiarismReport data={response} />}
+      {response && <PlagiarismReport data={response?.data} />}
     </>
   );
 };

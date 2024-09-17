@@ -4,32 +4,22 @@ const axios = require("axios");
 const FormData = require("form-data");
 const { createResponse } = require("../services/responseService");
 const { v4: uuidv4 } = require("uuid");
-const pdfParse = require("pdf-parse");
 const fetch = require("node-fetch");
 const mammoth = require("mammoth");
+const mime = require("mime-types");
+const nodemailer = require("nodemailer");
+const {
+  extractTextFromPdd,
+  extractTextFromWord,
+  getFileExtensionFromContentType,
+  calculateAveragePlagiarismPercentage,
+  extractTextFromBuffer,
+  convertTextToJsonl,
+  analyzeTextForPlagiarism,
+} = require("../utils/util");
 require("dotenv").config();
 const reports = {};
 
-// Extract text from PDF files
-async function extractTextFromPdf(filePath) {
-  const data = fs.readFileSync(filePath);
-  const pdfData = await pdfParse(data);
-  return pdfData.text;
-}
-
-// Extract text from Word files
-async function extractTextFromWord(filePath) {
-  const result = await mammoth.extractRawText({ path: filePath });
-  return result.value;
-}
-
-// Convert text into JSONL format for OpenAI processing
-function convertTextToJsonl(text) {
-  const lines = text.split("\n");
-  return lines.map((line) => JSON.stringify({ text: line })).join("\n");
-}
-
-// Upload document and analyze for plagiarism
 exports.uploadDocument = async (req, res) => {
   try {
     const file = req.file;
@@ -44,7 +34,7 @@ exports.uploadDocument = async (req, res) => {
 
     let text;
     if (ext === ".pdf") {
-      text = await extractTextFromPdf(filePath);
+      text = await extractTextFromPdd(filePath);
     } else if (ext === ".docx") {
       text = await extractTextFromWord(filePath);
     } else {
@@ -103,49 +93,6 @@ exports.uploadDocument = async (req, res) => {
     });
   }
 };
-
-// Generate similarity analysis using OpenAI GPT
-// Updated Plagiarism Analysis using a newer GPT model
-async function analyzeTextForPlagiarism(text) {
-  const apiKey = process.env.CHAT_GPT_API_KEY;
-  const model = "gpt-3.5-turbo-16k"; // Use GPT-3.5-turbo-16k for larger token limits
-
-  try {
-    const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        model: model,
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant that checks for plagiarism.",
-          },
-          {
-            role: "user",
-            content: `Check the following text for plagiarism:\n\n${text}`,
-          },
-        ],
-        max_tokens: 16000, // Max tokens for GPT-3.5-turbo-16k
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const analysis = response.data.choices[0].message.content;
-    return analysis;
-  } catch (error) {
-    console.error(
-      "Error performing plagiarism analysis",
-      error.response?.data || error.message
-    );
-    throw new Error("Error performing plagiarism analysis");
-  }
-}
-
 exports.getPlagiarismReport = async (req, res) => {
   try {
     const { id } = req.params;
@@ -193,87 +140,128 @@ exports.testApi = async (req, res) => {
   }
 };
 
-exports.testApi = async (req, res) => {
-  try {
-    const testData = {
-      message: "Test API is working!",
-      timestamp: new Date().toISOString(),
-    };
-
-    res.status(200).json({
-      status: "success",
-      data: testData,
-    });
-  } catch (error) {
-    console.error("Error in testApi:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Internal Server Error",
-    });
-  }
-};
-
 exports.plagariseApi = async (req, res) => {
   const { text: inputText, website, version, language, country } = req.body;
-  let file = req.file;
-
   let extractedText = inputText || "";
-  if (file) {
-    if (file.mimetype === "application/pdf") {
-      const pdfBuffer = fs.readFileSync(file.path);
-      const pdfData = await pdfParse(pdfBuffer);
-      extractedText = pdfData.text;
-    } else if (
-      file.mimetype ===
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
-      const docxBuffer = fs.readFileSync(file.path);
-      const docxData = await mammoth.extractRawText({ buffer: docxBuffer });
-      extractedText = docxData.value;
-    }
-  }
-
-  if (extractedText.length < 300) {
-    return res.status(400).json({
-      statusCode: 400,
-      message: "Text must be at least 300 characters long.",
-    });
-  }
-
-  const formData = new FormData();
-  formData.append("text", extractedText);
-  formData.append("website", website || "");
-  formData.append("version", version || "");
-  formData.append("language", language || "");
-
-  if (file) {
-    formData.append("file", fs.createReadStream(file.path), file.originalname);
-  }
-
-  const token = process.env.GO_WINSTON_API_KEY;
-
-  let text = extractedText;
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text, file, website, language, country }),
-  };
 
   try {
+    const fileLink = req.fileLink;
+
+    if (fileLink) {
+      const response = await axios.get(fileLink, {
+        responseType: "arraybuffer",
+      });
+      const fileBuffer = response.data;
+
+      const contentType = response.headers["content-type"];
+      const fileExtension = getFileExtensionFromContentType(contentType);
+
+      if (!fileExtension) {
+        throw new Error("Unsupported file type");
+      }
+      extractedText = await extractTextFromBuffer(fileBuffer, fileExtension);
+    }
+
+    // Prepare data for the plagiarism API
+    const token = process.env.GO_WINSTON_API_KEY;
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: extractedText,
+        website,
+        version,
+        language,
+        country,
+      }),
+    };
+
+    // Call the plagiarism API
     const response = await fetch(
       "https://api.gowinston.ai/v2/plagiarism",
       options
     );
-    const data = await response.json();
+    let data = await response.json();
+    const averagePlagiarismPercentage =
+      calculateAveragePlagiarismPercentage(data);
+
     if (data.error) {
       return res.status(400).json(data);
     }
-    res.json(data);
+
+    res.json({ data, averagePlagiarismPercentage });
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: "An internal server error occurred" });
   }
+};
+
+exports.sendEmailApi = async (req, res) => {
+  const { recipientEmail } = req.body;
+
+  if (!recipientEmail) {
+    return res.status(400).json({ error: "Recipient email is required" });
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      // type: "OAuth2",
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+      // clientId: process.env.OAUTH_CLIENTID,
+      // clientSecret: process.env.OAUTH_CLIENT_SECRET,
+      // refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: recipientEmail,
+    subject: "AI-Powered Plagiarism Detection: Ensure Academic Integrity",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="background-color: #f5f5f5; padding: 20px; text-align: center;">
+          <h1 style="color: #4CAF50;">AI-Powered Plagiarism Detection</h1>
+        </div>
+        <div style="padding: 20px;">
+          <p style="font-size: 16px;">
+            Dear User,
+          </p>
+          <p style="font-size: 16px;">
+            Ensure academic integrity with our cutting-edge AI technology. Detect plagiarism with unparalleled accuracy and speed. Whether you are a student, researcher, or institution, our tool offers reliable results that help you maintain originality in your work.
+          </p>
+          <p style="font-size: 16px;">
+            Our system scans billions of online sources to provide comprehensive plagiarism reports, ensuring that your content is free from any unintentional duplication. It's fast, secure, and easy to use.
+          </p>
+          <p style="font-size: 16px;">
+            Start using our service today and keep your content authentic!
+          </p>
+          <p style="font-size: 16px;">
+            Best Regards,<br/>
+            The AI Plagiarism Detection Team
+          </p>
+        </div>
+        <div style="background-color: #f5f5f5; padding: 10px; text-align: center;">
+          <p style="font-size: 14px; color: #888;">
+            © 2024 AI Plagiarism Detection, All rights reserved.<br/>
+            <a href="#" style="color: #4CAF50; text-decoration: none;">Unsubscribe</a> | 
+            <a href="#" style="color: #4CAF50; text-decoration: none;">Contact Us</a>
+          </p>
+        </div>
+      </div>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("❌ Error:", error.message);
+      return res.status(500).json({ error: "Failed to send email" });
+    } else {
+      return res.status(200).json({ message: "Email sent successfully", info });
+    }
+  });
 };

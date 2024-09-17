@@ -2,17 +2,47 @@ import React, { useState } from "react";
 import Button from "../ui/button";
 import Input from "../ui/input";
 import { ArrowRight } from "lucide-react";
+import DynamicSpinner from "../ui/dynamicSpinner";
 
 const HeroSection = () => {
+  let API = process.env.REACT_APP_API_URL;
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError(null);
+    setLoading(true);
+    const apiUploadUrl = `${API}/api/send-email`;
+
+    try {
+      const response = await fetch(apiUploadUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ recipientEmail: email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send email");
+      }
+
+      const data = await response.json();
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error:", error.message);
+      setError("There was a problem sending the email. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   const handleMoreInfo = () => {
     setSubmitted(false);
+    setEmail("");
   };
 
   return (
@@ -43,9 +73,20 @@ const HeroSection = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                  <Button type="submit" size="sm" className="flex-shrink-0">
-                    <span>Get Started</span>
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="flex-shrink-0"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <DynamicSpinner size={8} color="red-500" />
+                    ) : (
+                      <>
+                        <span>Get Started</span>
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 </form>
               ) : (
@@ -63,6 +104,7 @@ const HeroSection = () => {
                   </Button>
                 </div>
               )}
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <p className="text-xs text-gray-500 dark:text-gray-400 text-center sm:text-center">
                 Start your free trial. No credit card required.
               </p>
