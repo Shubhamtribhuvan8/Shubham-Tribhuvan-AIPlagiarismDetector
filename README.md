@@ -53,11 +53,11 @@ The React application should now be running at ```http://localhost:3000```.
 
 ### Technologies Used
 
-### React: A JavaScript library for building user interfaces.
+-React: A JavaScript library for building user interfaces.
 
-### Axios: For making API requests.
+-Axios: For making API requests.
 
-### Tailwind CSS: For styling and ensuring responsiveness.
+* Tailwind CSS: For styling and ensuring responsiveness.
 
 
 ### Backend Setup (Node.js with AI API Integration)
