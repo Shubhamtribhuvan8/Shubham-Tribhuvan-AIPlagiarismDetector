@@ -45,26 +45,26 @@ Run the React app locally:
 
 Create a .env file in the frontend directory with the following variables:
 
-REACT_APP_API_URL=http://localhost:8080
+```REACT_APP_API_URL=http://localhost:8080```
 
 Access the application:
 
-The React application should now be running at http://localhost:3000.
+The React application should now be running at ```http://localhost:3000```.
 
 ### Technologies Used
 
-React: A JavaScript library for building user interfaces.
+# React: A JavaScript library for building user interfaces.
 
-Axios: For making API requests.
+# Axios: For making API requests.
 
-Tailwind CSS: For styling and ensuring responsiveness.
+# Tailwind CSS: For styling and ensuring responsiveness.
 
 
 ### Backend Setup (Node.js with AI API Integration)
 
 -Prerequisites
 
-Node.js: Ensure you have Node.js installed (v16 or above).
+# Node.js: Ensure you have Node.js installed (v16 or above).
 
 npm: Used to install backend dependencies.
 
@@ -88,12 +88,13 @@ Navigate to the backend directory:
 ```npm install```
 
 -Backend Environment Variables: Create a .env file in the backend directory with the following variables:
-PORT=5000
+
+```PORT=5000
 OPENAI_API_KEY=your_openai_api_key_here
 CLAUDI_API_KEY=
 CHAT_GPT_API_KEY=
 CHAT_GPT_API_URL=https://api.openai.com/v1/files
-GO_WINSTON_API_KEY=
+GO_WINSTON_API_KEY= ```
 
 Run the Node.js server:
 ```npm start```
@@ -102,6 +103,7 @@ Run the Node.js server:
 The backend server will be running on ```http://localhost:8080```.
 
 The main endpoint is:
+
 ``POST /api/plagiarism-check: Accepts a document (PDF/Word) and returns the plagiarism report using AI processing.``
 
 
