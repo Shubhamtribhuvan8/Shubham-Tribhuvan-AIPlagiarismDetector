@@ -81,7 +81,7 @@ Navigate to the backend directory:
 
 * Backend Environment Variables: Create a .env file in the backend directory with the following variables:
 
-``` PORT=8080
+PORT=8080
 OPENAI_API_KEY=your_openai_api_key_here
 CLAUDI_API_KEY=
 CHAT_GPT_API_KEY=
