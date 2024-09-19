@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -8,31 +8,20 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  ResponsiveContainer,
 } from "recharts";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "./ui/chart/chart";
-import { Info } from "lucide-react";
+  Info,
+  Download,
+  Eye,
+  EyeOff,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 const PlagiarismReport = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showFullTable, setShowFullTable] = useState(false);
   const sources = Array.isArray(data?.sources) ? data.sources : [];
 
   const onPieEnter = (_, index) => {
@@ -40,149 +29,211 @@ const PlagiarismReport = ({ data }) => {
   };
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
+  const toggleFullTable = () => setShowFullTable(!showFullTable);
+
+  const renderActiveShape = (props) => {
+    const { cx, cy, percent, fill } = props;
+    return (
+      <g>
+        <text
+          x={cx}
+          y={cy}
+          dy={-10}
+          textAnchor="middle"
+          fill={fill}
+          className="text-3xl font-bold"
+        >
+          {`${(percent * 100).toFixed(0)}%`}
+        </text>
+        <text
+          x={cx}
+          y={cy}
+          dy={30}
+          textAnchor="middle"
+          fill={fill}
+          className="text-lg"
+        >
+          Plagiarized
+        </text>
+      </g>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8 mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold text-gray-900">Plagiarism Report</h1>
+        <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">
+          Plagiarism Report
+        </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Plagiarism Score</CardTitle>
-              <CardDescription>Overall plagiarism percentage</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer className="h-64">
-                <PieChart>
-                  <Pie
-                    activeIndex={activeIndex}
-                    activeShape={renderActiveShape}
-                    data={[
-                      { name: "Plagiarized", value: data?.result?.score },
-                      { name: "Original", value: 100 - data?.result?.score },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    fill="hsl(var(--chart-1))"
-                    dataKey="value"
-                    onMouseEnter={onPieEnter}
-                  >
-                    <Cell key="cell-0" fill="hsl(var(--chart-1))" />
-                    <Cell key="cell-1" fill="hsl(var(--chart-5))" />
-                  </Pie>
-                  <Tooltip content={<ChartTooltipContent hideLabel />} />
-                </PieChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                Plagiarism Score
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Overall plagiarism percentage
+              </p>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      activeIndex={activeIndex}
+                      activeShape={renderActiveShape}
+                      data={[
+                        { name: "Plagiarized", value: data?.result?.score },
+                        { name: "Original", value: 100 - data?.result?.score },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      onMouseEnter={onPieEnter}
+                    >
+                      <Cell key="cell-0" fill="#4F46E5" />
+                      <Cell key="cell-1" fill="#E5E7EB" />
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Plagiarism Sources</CardTitle>
-              <CardDescription>
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                Top Plagiarism Sources
+              </h2>
+              <p className="text-gray-600 mb-4">
                 Sources with the highest plagiarism scores
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer className="h-64">
-                {sources.length > 0 && (
+              </p>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={sources.slice(0, 5)}>
                     <XAxis dataKey="source" />
                     <YAxis />
-                    <Tooltip content={<ChartTooltipContent hideLabel />} />
-                    <Bar dataKey="plagiarismWords" fill="hsl(var(--chart-2))">
-                      {sources.slice(0, 5).map((entry, index) => (
+                    <Tooltip />
+                    <Bar dataKey="plagiarismWords" fill="#4F46E5">
+                      {sources.slice(0, 5).map((_, index) => (
                         <Cell
                           key={`cell-${index}`}
-                          fill={`hsl(var(--chart-${index + 1}))`}
+                          fill={`hsl(${220 + index * 20}, 70%, 50%)`}
                         />
                       ))}
                     </Bar>
                   </BarChart>
-                )}
-              </ChartContainer>
-            </CardContent>
-          </Card>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Detailed Source Information</CardTitle>
-            <CardDescription>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+              Detailed Source Information
+            </h2>
+            <p className="text-gray-600 mb-4">
               Comprehensive list of plagiarism sources
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Plagiarized Words</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sources.length > 0 ? (
-                  sources.map((source, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{source.source}</TableCell>
-                      <TableCell>{source.score}%</TableCell>
-                      <TableCell>{source.plagiarismWords}</TableCell>
-                    </TableRow>
-                  ))
+            </p>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Source
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Score
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Plagiarized Words
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sources.length > 0 ? (
+                    sources
+                      .slice(0, showFullTable ? undefined : 5)
+                      .map((source, index) => (
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {source.source}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {source.score}%
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {source.plagiarismWords}
+                          </td>
+                        </tr>
+                      ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={3}
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
+                      >
+                        No data available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {sources.length > 5 && (
+              <button
+                onClick={toggleFullTable}
+                className="mt-4 flex items-center justify-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                {showFullTable ? (
+                  <>
+                    <EyeOff className="mr-2 h-4 w-4" />
+                    Show Less
+                  </>
                 ) : (
-                  <TableRow>
-                    <TableCell colSpan={3}>No data available</TableCell>
-                  </TableRow>
+                  <>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Show All Sources
+                  </>
                 )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </button>
+            )}
+          </div>
+        </div>
 
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Info className="h-4 w-4" />
-            <span>Total Words: {data?.result?.textWordCounts}</span>
-            <span>|</span>
-            <span>Plagiarized Words: {data?.result?.totalPlagiarismWords}</span>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden p-6">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Info className="h-4 w-4" />
+              <span>Total Words: {data?.result?.textWordCounts}</span>
+              <span>|</span>
+              <span>
+                Plagiarized Words: {data?.result?.totalPlagiarismWords}
+              </span>
+            </div>
+            <button className="flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+              <Download className="mr-2 h-4 w-4" />
+              Download Full Report
+            </button>
           </div>
         </div>
       </div>
     </div>
-  );
-};
-
-const renderActiveShape = (props) => {
-  const { cx, cy, percent, fill, payload } = props;
-  return (
-    <g>
-      <text
-        x={cx}
-        y={cy}
-        dy={8}
-        textAnchor="middle"
-        fill={fill}
-        className="text-2xl font-bold"
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-      <text
-        x={cx}
-        y={cy + 30}
-        dy={8}
-        textAnchor="middle"
-        fill={fill}
-        className="text-sm"
-      >
-        {payload.name}
-      </text>
-    </g>
   );
 };
 

@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { jsPDF } from "jspdf";
+// import { Input } from "@/components/ui/input";
 import PlagiarismReport from "./plagiarismReports";
+// import { Label } from "@/components/ui/label";
 import Spinner from "./ui/spinner";
 import Button from "./ui/button";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Upload, Download, FileText, AlertCircle } from "lucide-react";
 const AIUserScreen = () => {
   let API = process.env.REACT_APP_API_URL;
   const [text, setText] = useState("");
@@ -121,89 +125,97 @@ const AIUserScreen = () => {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-8">
-        <div className="bg-white shadow-lg rounded-lg p-8 max-w-3xl w-full">
-          <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
-            Plagiarism Detection
-          </h1>
-          {loading ? (
-            <Spinner />
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <div className="mb-6">
-                <label
-                  htmlFor="file-upload"
-                  className="block text-lg font-medium text-gray-700 mb-2"
-                >
-                  Upload your document:
-                </label>
-                <input
-                  required="true"
-                  id="file-upload"
-                  type="file"
-                  onChange={handleFileChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4 sm:p-8">
+        <div className="w-full max-w-md bg-white/90 backdrop-blur-md shadow-2xl rounded-lg overflow-hidden">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+              Plagiarism Detection
+            </h2>
+            {loading ? (
+              <div className="flex justify-center items-center h-32">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
               </div>
-
-              <Button
-                type="submit"
-                className={`w-full text-center py-3 px-4 text-white font-semibold rounded-lg transition ${
-                  loading && "opacity-50 cursor-not-allowed"
-                }`}
-                disabled={loading}
-              >
-                {loading ? "Processing..." : "Check for Plagiarism"}
-              </Button>
-            </form>
-          )}
-          {error && (
-            <div className="mt-4 text-red-500">
-              <strong>{error}</strong>
-            </div>
-          )}
-          {submitted && (
-            <div className="bg-gray-50 p-6 rounded-lg shadow-inner">
-              {response ? (
-                <>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                    Plagiarism Report
-                  </h2>
-                  <p className="text-lg text-gray-700 mb-4">
-                    Plagiarism Percentage:{" "}
-                    <span className="font-bold">
-                      {response?.averagePlagiarismPercentage || 0}%
-                    </span>
-                  </p>
-                  <Button
-                    onClick={handleDownload}
-                    className="mt-4 py-2 px-4 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition"
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="file-upload"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Download Report
-                  </Button>
-                  <div className="mt-6 text-center">
-                    <Button
+                    Upload your document
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      id="file-upload"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileChange}
+                      accept=".pdf,.docx"
+                    />
+                    <button
+                      type="button"
                       onClick={() =>
-                        window.scrollTo(0, document.body.scrollHeight)
+                        document.getElementById("file-upload").click()
                       }
-                      className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                      Check Detailed Report
-                    </Button>
+                      <Upload className="w-4 h-4 inline-block mr-2" />
+                      Choose File
+                    </button>
+                    {file && (
+                      <span className="text-sm text-gray-500 truncate max-w-[150px]">
+                        {file.name}
+                      </span>
+                    )}
                   </div>
-                </>
-              ) : (
-                <>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                    No Plagiarism Report Available
-                  </h2>
-                  <p className="text-lg text-gray-700 mb-4">
-                    Please submit a document to generate a plagiarism report.
+                  {error && (
+                    <p className="text-sm text-red-500 flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {error}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                  disabled={loading || !file}
+                >
+                  {loading ? "Processing..." : "Check for Plagiarism"}
+                </Button>
+              </form>
+            )}
+            {submitted && response && (
+              <div className="mt-6 space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Plagiarism Report
+                  </h3>
+                  <p className="text-3xl font-bold text-indigo-600">
+                    {response.averagePlagiarismPercentage}%
                   </p>
-                </>
-              )}
-            </div>
-          )}
+                  <p className="text-sm text-gray-500">Plagiarism Detected</p>
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleDownload}
+                    className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    <Download className="w-4 h-4 inline-block mr-2" />
+                    Download
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.scrollTo(0, document.body.scrollHeight)
+                    }
+                    className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    <FileText className="w-4 h-4 inline-block mr-2" />
+                    View Details
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {response && <PlagiarismReport data={response?.data} />}
