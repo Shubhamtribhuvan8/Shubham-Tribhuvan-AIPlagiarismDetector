@@ -67,7 +67,7 @@ const HeroSection = () => {
                     className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
                   >
                     <Input
-                      className="flex-1"
+                      className="flex-1 text-black"
                       placeholder="Enter your email"
                       type="email"
                       value={email}
