@@ -12,6 +12,7 @@ import NotFound from "./component/pageNotFound";
 import PlagiarismReport from "./component/plagiarismReports";
 import Testonomials from "./component/testonomials";
 import KeySlider from "./component/keySlider";
+import AIToolsPhoneView from "./component/aiToolsPhoneView";
 
 const App = () => {
   const [landingPageData, setLandingPageData] = useState({});
@@ -41,6 +42,7 @@ const LandingPage = ({ data }) => {
       <Home data={data.Home} />
       <HeroSection data={data.HeroSection} />
       <Features data={data.Features} />
+      <AIToolsPhoneView data={data.AIToolsPhoneView} />
       <KeySlider data={data.KeySlider} />
       <Testonomials data={data.Testonomials} />
       <Footer data={data.Footer} />
