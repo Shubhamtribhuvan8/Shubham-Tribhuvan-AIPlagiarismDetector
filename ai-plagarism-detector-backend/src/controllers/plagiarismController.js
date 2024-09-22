@@ -102,12 +102,9 @@ exports.uploadDocument = async (req, res) => {
 exports.getPlagiarismReport = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("Retrieving report with ID:", id);
-
     const report = reports[id];
 
     if (!report) {
-      console.log("Report not found:", id);
       return res.status(404).json(createResponse(404, "Report not found"));
     }
 
@@ -276,8 +273,6 @@ exports.geminiPlagiarise = async (req, res) => {
   const tempDir = await import("temp-dir").then((module) => module.default);
   try {
     const fileLink = req.fileLink;
-    console.log("filelink", fileLink);
-
     if (fileLink) {
       const response = await axios.get(fileLink, {
         responseType: "arraybuffer",
@@ -303,10 +298,6 @@ exports.geminiPlagiarise = async (req, res) => {
 
       fs.unlinkSync(tempFilePath);
 
-      console.log(
-        `Uploaded file ${uploadResponse.file.displayName} as: ${uploadResponse.file.uri}`
-      );
-
       const result = await genAI
         .getGenerativeModel({ model: "gemini-1.5-flash" })
         .generateContent([
@@ -324,12 +315,10 @@ exports.geminiPlagiarise = async (req, res) => {
       // Log the raw AI response
 
       const aiResponse = result.response.text();
-      console.log("AI Response:", aiResponse);
       // Attempt to parse the AI response as JSON
       let plagiarismData;
       try {
         plagiarismData = aiResponse;
-        console.log("plagiarismData", plagiarismData);
       } catch (error) {
         console.error("Error parsing AI response:", error);
 
