@@ -22,7 +22,7 @@ router.post(
 );
 
 router.post(
-  "/gemini",
+  "/gemini-plagiarism",
   upload.single("file"),
   uploadFileIO,
   plagiarismController.geminiPlagiarise
