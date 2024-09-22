@@ -7,6 +7,7 @@ import Spinner from "./ui/spinner";
 import Button from "./ui/button";
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Upload, Download, FileText, AlertCircle } from "lucide-react";
+import GeminiReports from "./geminiReports";
 const AIUserScreen = () => {
   let API = process.env.REACT_APP_API_URL;
   const [text, setText] = useState("");
@@ -20,6 +21,11 @@ const AIUserScreen = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const [geminiFile, setGeminiFile] = useState(null);
+  const [geminiResponse, setGeminiResponse] = useState(null);
+  const [geminiError, setGeminiError] = useState(null);
+  const [geminiLoading, setGeminiLoading] = useState(false);
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     const allowedExtensions = ["pdf", "docx"];
@@ -32,6 +38,24 @@ const AIUserScreen = () => {
       } else {
         setFile(null);
         setError("Invalid file type. Please upload a .pdf or .docx file.");
+      }
+    }
+  };
+
+  const handleGeminiFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    const allowedExtensions = ["pdf"];
+
+    if (selectedFile) {
+      const fileExtension = selectedFile.name.split(".").pop().toLowerCase();
+      if (allowedExtensions.includes(fileExtension)) {
+        setGeminiFile(selectedFile);
+        setGeminiError(null);
+      } else {
+        setGeminiFile(null);
+        setGeminiError(
+          "Invalid file type. Please upload a .pdf or .docx file."
+        );
       }
     }
   };
@@ -63,7 +87,6 @@ const AIUserScreen = () => {
     };
 
     try {
-      console.log(API, `${API}/api/plagiarism-report`);
       const res = await fetch(`${API}/api/plagiarism-report`, options);
       const result = await res.json();
       setResponse(result);
@@ -73,6 +96,35 @@ const AIUserScreen = () => {
       setLoading(false);
     }
   };
+
+  const handleGeminiSubmit = async (e) => {
+    e.preventDefault();
+    setGeminiLoading(true);
+
+    let formData = new FormData();
+    if (geminiFile) {
+      formData.append("file", geminiFile);
+    }
+
+    try {
+      const res = await fetch(`${API}/api/gemini-plagiarism`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        setGeminiResponse(result);
+      } else {
+        setGeminiError(result.error || "Something went wrong.");
+      }
+    } catch (err) {
+      setGeminiError("Error: " + err.message);
+    } finally {
+      setGeminiLoading(false);
+    }
+  };
+
   const handleDownload = () => {
     if (response) {
       generatePdf(response.data, response.averagePlagiarismPercentage);
@@ -184,6 +236,66 @@ const AIUserScreen = () => {
                 </Button>
               </form>
             )}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                Gemini Plagiarism Detection
+              </h3>
+              {geminiLoading ? (
+                <div className="flex justify-center items-center h-32">
+                  <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                </div>
+              ) : (
+                <form onSubmit={handleGeminiSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="gemini-file-upload"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Upload your file for Gemini Plagiarism Check
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        id="gemini-file-upload"
+                        type="file"
+                        className="hidden"
+                        onChange={handleGeminiFileChange}
+                        accept=".pdf"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          document.getElementById("gemini-file-upload").click()
+                        }
+                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        <Upload className="w-4 h-4 inline-block mr-2" />
+                        Choose File
+                      </button>
+                      {geminiFile && (
+                        <span className="text-sm text-gray-500 truncate max-w-[150px]">
+                          {geminiFile.name}
+                        </span>
+                      )}
+                    </div>
+                    {geminiError && (
+                      <p className="text-sm text-red-500 flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1" />
+                        {geminiError}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    disabled={geminiLoading || !geminiFile}
+                  >
+                    {geminiLoading
+                      ? "Processing..."
+                      : "Check Plegarism with Gemini"}
+                  </Button>
+                </form>
+              )}
+            </div>
             {submitted && response && (
               <div className="mt-6 space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
@@ -219,6 +331,7 @@ const AIUserScreen = () => {
         </div>
       </div>
       {response && <PlagiarismReport data={response?.data} />}
+      {geminiResponse && <GeminiReports data={geminiResponse?.data} />}
     </>
   );
 };
