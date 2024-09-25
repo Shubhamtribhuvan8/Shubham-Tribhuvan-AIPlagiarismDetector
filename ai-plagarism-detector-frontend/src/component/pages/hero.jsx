@@ -5,7 +5,8 @@ import { ArrowRight } from "lucide-react";
 import DynamicSpinner from "../ui/dynamicSpinner";
 
 const HeroSection = () => {
-  let API = process.env.REACT_APP_API_URL;
+  let API =
+    process.env.REACT_APP_API_URL || process.env.REACT_APP_API_URL_UPDATED;
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);

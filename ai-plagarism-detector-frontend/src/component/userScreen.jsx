@@ -4,7 +4,8 @@ import Button from "./ui/button";
 
 //TODO: NO CHAT GPT/CLOUD AI API TOKEN CREDITIALS
 const UserScreen = () => {
-  let API = process.env.REACT_APP_API_URL;
+  let API =
+    process.env.REACT_APP_API_URL || process.env.REACT_APP_API_URL_UPDATED;
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);

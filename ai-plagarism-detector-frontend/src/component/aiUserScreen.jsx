@@ -9,7 +9,8 @@ import Button from "./ui/button";
 import { Loader2, Upload, Download, FileText, AlertCircle } from "lucide-react";
 import GeminiReports from "./geminiReports";
 const AIUserScreen = () => {
-  let API = process.env.REACT_APP_API_URL;
+  let API =
+    process.env.REACT_APP_API_URL || process.env.REACT_APP_API_URL_UPDATED;
   const geminiReportsRef = useRef(null);
   const [text, setText] = useState("");
   const [website, setWebsite] = useState("");
