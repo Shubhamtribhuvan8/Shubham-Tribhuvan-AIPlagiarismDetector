@@ -16,6 +16,8 @@ const {
   extractTextFromBuffer,
   convertTextToJsonl,
   analyzeTextForPlagiarism,
+  getFileExtensionContentType,
+  extractGeminiText,
 } = require("../utils/util");
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -322,7 +324,6 @@ exports.geminiPlagiarise = async (req, res) => {
       } catch (error) {
         console.error("Error parsing AI response:", error);
 
-        // Fallback response structure if JSON parsing fails
         plagiarismData = {
           summary:
             "The AI returned a detailed report that could not be parsed as JSON. The report discusses the origin and common usage of the content related to Lorem Ipsum.",
@@ -348,6 +349,94 @@ exports.geminiPlagiarise = async (req, res) => {
           },
           result: {
             plagiarismData,
+          },
+        },
+      };
+
+      return res.json(structuredResponse);
+    } else {
+      return res.status(400).json({ error: "No file link provided" });
+    }
+  } catch (error) {
+    console.error("GeminiPlagiarise error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.geminiGenrativeModelPlagiarise = async (req, res) => {
+  const tempDir = await import("temp-dir").then((module) => module.default);
+  try {
+    const fileLink = req.fileLink;
+
+    if (fileLink) {
+      const response = await axios.get(fileLink, {
+        responseType: "arraybuffer",
+      });
+      const fileBuffer = response.data;
+      const contentType = response.headers["content-type"];
+
+      const fileExtension = getFileExtensionContentType(contentType);
+      if (!fileExtension) throw new Error("Unsupported file type");
+      const tempFilePath = path.join(
+        tempDir,
+        `uploaded_document.${fileExtension}`
+      );
+      fs.writeFileSync(tempFilePath, fileBuffer);
+      const extractedText = await extractGeminiText(tempFilePath);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+      const generationConfig = {
+        temperature: 2,
+        topP: 0.95,
+        topK: 64,
+        maxOutputTokens: 8192,
+        responseMimeType: "application/json",
+      };
+
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `You are an AI-powered plagiarism detector. Analyze the following text for potential plagiarism. Your response must be in a structured JSON format with the following properties:
+                      plagiarismScore: A number between 0 and 100, representing the percentage of the text that is plagiarized.
+                      highlightedText: An array of strings, where each string is a portion of the text that has been flagged as plagiarized.
+                      Here’s the text to analyze: ${extractedText}`,
+              },
+            ],
+          },
+        ],
+      });
+
+      const result = await chatSession.sendMessage(extractedText);
+      const aiResponse = result.response.text();
+
+      let plagiarismData;
+      try {
+        plagiarismData = JSON.parse(aiResponse);
+      } catch (error) {
+        console.error("Error parsing AI response:", error);
+        return res
+          .status(500)
+          .json({ error: "Error analyzing the document for plagiarism." });
+      }
+
+      // Clean up temporary file
+      fs.unlinkSync(tempFilePath);
+
+      // Return structured response
+      const structuredResponse = {
+        data: {
+          status: 200,
+          scanInformation: {
+            service: "plagiarism",
+            scanTime: new Date().toISOString(),
+            inputType: "text",
+          },
+          result: {
+            plagiarismScore: plagiarismData.plagiarismScore,
+            highlightedText: plagiarismData.highlightedText,
           },
         },
       };

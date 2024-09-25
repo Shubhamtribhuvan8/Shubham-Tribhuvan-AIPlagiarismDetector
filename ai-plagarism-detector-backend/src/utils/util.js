@@ -178,6 +178,34 @@ const uploadFileIO = async (req, res, next) => {
     return res.status(500).json({ error: "File upload failed" });
   }
 };
+const getFileExtensionContentType = (contentType) => {
+  const mimeTypes = {
+    "application/pdf": "pdf",
+    "application/msword": "doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      "docx",
+  };
+  return mimeTypes[contentType] || null;
+};
+
+async function extractGeminiText(filePath) {
+  const fileExtension = path.extname(filePath).toLowerCase();
+  let extractedText = "";
+
+  if (fileExtension === ".pdf") {
+    const dataBuffer = fs.readFileSync(filePath);
+    const pdfData = await pdfParse(dataBuffer);
+    extractedText = pdfData.text;
+  } else if (fileExtension === ".docx") {
+    const dataBuffer = fs.readFileSync(filePath);
+    const docxData = await mammoth.extractRawText({ buffer: dataBuffer });
+    extractedText = docxData.value;
+  } else {
+    throw new Error("Unsupported file type for text extraction");
+  }
+
+  return extractedText;
+}
 
 module.exports = {
   extractTextFromPdf,
@@ -190,4 +218,6 @@ module.exports = {
   uploadFileToOpenAI,
   fetchFileFromLink,
   uploadFileIO,
+  getFileExtensionContentType,
+  extractGeminiText,
 };
