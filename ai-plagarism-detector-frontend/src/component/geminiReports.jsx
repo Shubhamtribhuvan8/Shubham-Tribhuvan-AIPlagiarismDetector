@@ -1,5 +1,6 @@
 import React from "react";
 import { Info, Clock } from "lucide-react";
+import PlagiarismResult from "./reports/plagarism";
 
 const GeminiReports = ({ data }) => {
   if (!data) {
@@ -28,7 +29,11 @@ const GeminiReports = ({ data }) => {
             Below is the information returned from the plagiarism scan.
           </p>
           <div className="bg-gray-50 rounded-lg p-4 text-gray-800">
-            <p>{result?.plagiarismData}</p>
+            {result?.highlightedText?.length > 0 ? (
+              <PlagiarismResult result={result} />
+            ) : (
+              <p>{result?.plagiarismData}</p>
+            )}
           </div>
         </div>
 

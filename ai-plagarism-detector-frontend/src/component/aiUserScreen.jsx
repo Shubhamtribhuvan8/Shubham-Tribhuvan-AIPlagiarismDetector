@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { jsPDF } from "jspdf";
 // import { Input } from "@/components/ui/input";
 import PlagiarismReport from "./plagiarismReports";
@@ -10,6 +10,7 @@ import { Loader2, Upload, Download, FileText, AlertCircle } from "lucide-react";
 import GeminiReports from "./geminiReports";
 const AIUserScreen = () => {
   let API = process.env.REACT_APP_API_URL;
+  const geminiReportsRef = useRef(null);
   const [text, setText] = useState("");
   const [website, setWebsite] = useState("");
   const [version, setVersion] = useState("");
@@ -25,6 +26,16 @@ const AIUserScreen = () => {
   const [geminiResponse, setGeminiResponse] = useState(null);
   const [geminiError, setGeminiError] = useState(null);
   const [geminiLoading, setGeminiLoading] = useState(false);
+  const [geminiVersion, setGeminiVersion] = useState("1.5");
+
+  useEffect(() => {
+    if (geminiResponse && geminiReportsRef.current) {
+      window.scrollTo({
+        top: geminiReportsRef.current.offsetTop,
+        behavior: "smooth",
+      });
+    }
+  }, [geminiResponse]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -89,7 +100,13 @@ const AIUserScreen = () => {
     try {
       const res = await fetch(`${API}/api/plagiarism-report`, options);
       const result = await res.json();
-      setResponse(result);
+      if (result) {
+        window.scrollTo({
+          top: document.querySelector("#plagiarism-report").offsetTop,
+          behavior: "smooth",
+        });
+        setResponse(result);
+      }
     } catch (err) {
       setError("Error: " + err.message);
     } finally {
@@ -106,8 +123,15 @@ const AIUserScreen = () => {
       formData.append("file", geminiFile);
     }
 
+    let apiEndpoint;
+    if (geminiVersion === "1.5") {
+      apiEndpoint = `${API}/api/gemini-plagiarism`;
+    } else if (geminiVersion === "1.5 Pro") {
+      apiEndpoint = `${API}/api/gemini-pro-plagiarism`;
+    }
+
     try {
-      const res = await fetch(`${API}/api/gemini-plagiarism`, {
+      const res = await fetch(apiEndpoint, {
         method: "POST",
         body: formData,
       });
@@ -131,8 +155,6 @@ const AIUserScreen = () => {
     }
   };
   const generatePdf = (data, percentage) => {
-    console.log(data);
-
     const doc = new jsPDF();
     doc.setLineWidth(0.5);
 
@@ -284,6 +306,28 @@ const AIUserScreen = () => {
                       </p>
                     )}
                   </div>
+                  <div className="flex space-x-2">
+                    <label>
+                      <input
+                        type="radio"
+                        name="gemini-version"
+                        value="1.5"
+                        checked={geminiVersion === "1.5"}
+                        onChange={(e) => setGeminiVersion(e.target.value)}
+                      />
+                      Gemini 1.5 Flash
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="gemini-version"
+                        value="1.5 Pro"
+                        checked={geminiVersion === "1.5 Pro"}
+                        onChange={(e) => setGeminiVersion(e.target.value)}
+                      />
+                      Gemini 1.5 Pro
+                    </label>
+                  </div>
                   <Button
                     type="submit"
                     className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -291,7 +335,7 @@ const AIUserScreen = () => {
                   >
                     {geminiLoading
                       ? "Processing..."
-                      : "Check Plegarism with Gemini"}
+                      : "Check Plagiarism with Gemini"}
                   </Button>
                 </form>
               )}
@@ -330,8 +374,16 @@ const AIUserScreen = () => {
           </div>
         </div>
       </div>
-      {response && <PlagiarismReport data={response?.data} />}
-      {geminiResponse && <GeminiReports data={geminiResponse?.data} />}
+      {response && (
+        <div id="plagiarism-report">
+          <PlagiarismReport data={response?.data} />
+        </div>
+      )}
+      {geminiResponse && (
+        <div ref={geminiReportsRef}>
+          <GeminiReports data={geminiResponse?.data} />
+        </div>
+      )}
     </>
   );
 };
