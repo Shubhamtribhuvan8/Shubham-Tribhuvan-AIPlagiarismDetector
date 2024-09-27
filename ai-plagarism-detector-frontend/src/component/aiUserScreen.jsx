@@ -102,10 +102,6 @@ const AIUserScreen = () => {
       const res = await fetch(`${API}/api/plagiarism-report`, options);
       const result = await res.json();
       if (result) {
-        window.scrollTo({
-          top: document.querySelector("#plagiarism-report").offsetTop,
-          behavior: "smooth",
-        });
         setResponse(result);
       }
     } catch (err) {
