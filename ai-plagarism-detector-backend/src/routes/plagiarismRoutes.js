@@ -35,6 +35,13 @@ router.post(
   plagiarismController.geminiGenrativeModelPlagiarise
 );
 
+router.post(
+  "/claude-plagiarism",
+  upload.single("file"),
+  uploadFileIO,
+  plagiarismController.claudeModelController
+);
+
 router.post("/send-email", plagiarismController.sendEmailApi);
 
 module.exports = router;

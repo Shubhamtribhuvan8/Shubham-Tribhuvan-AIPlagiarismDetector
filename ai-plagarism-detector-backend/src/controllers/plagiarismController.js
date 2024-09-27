@@ -22,10 +22,13 @@ const {
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { GoogleAIFileManager } = require("@google/generative-ai/server");
+const { Anthropic } = require("@anthropic-ai/sdk");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY);
-
+const anthropic = new Anthropic({
+  apiKey: process.env.CLAUDE_API_KEY,
+});
 const reports = {};
 
 exports.uploadDocument = async (req, res) => {
@@ -447,6 +450,71 @@ exports.geminiGenrativeModelPlagiarise = async (req, res) => {
     }
   } catch (error) {
     console.error("GeminiPlagiarise error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.claudeModelController = async (req, res) => {
+  const tempDir = await import("temp-dir").then((module) => module.default);
+  try {
+    const fileLink = req.fileLink;
+
+    if (fileLink) {
+      const response = await axios.get(fileLink, {
+        responseType: "arraybuffer",
+      });
+      const fileBuffer = response.data;
+      const contentType = response.headers["content-type"];
+
+      const fileExtension = getFileExtensionContentType(contentType);
+      if (!fileExtension) throw new Error("Unsupported file type");
+      const tempFilePath = path.join(
+        tempDir,
+        `uploaded_document.${fileExtension}`
+      );
+      fs.writeFileSync(tempFilePath, fileBuffer);
+      const extractedText = await extractGeminiText(tempFilePath);
+      const clauderesponse = await anthropic.messages.create({
+        // model: "claude-2.1",
+        model: "claude-3-5-sonnet-20240620",
+        max_tokens: 1024,
+        messages: [
+          {
+            role: "user",
+            content: `Parse the following data for plagiarism, and only return either true for plagiarised and false for original content : ${extractedText}`,
+          },
+        ],
+      });
+
+      let plagiarismData;
+      try {
+        plagiarismData = JSON.parse(clauderesponse);
+      } catch (error) {
+        console.error("Error parsing AI response:", error);
+        return res
+          .status(500)
+          .json({ error: "Error analyzing the document for plagiarism." });
+      }
+      fs.unlinkSync(tempFilePath);
+      const structuredResponse = {
+        data: {
+          status: 200,
+          scanInformation: {
+            service: "plagiarism",
+            scanTime: new Date().toISOString(),
+            inputType: "text",
+          },
+          result: {
+            plagiarismScore: plagiarismData,
+          },
+        },
+      };
+      return res.json(structuredResponse);
+    } else {
+      return res.status(400).json({ error: "No file link provided" });
+    }
+  } catch (error) {
+    console.error("ClaudePlagiarise error:", error);
     return res.status(500).json({ error: error.message });
   }
 };
