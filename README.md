@@ -2,7 +2,7 @@
 
 ## [Deployment Link](https://shubham-tribhuvan-ai-plagiarism-detector.vercel.app)
 
-## [DEMO VIDEO](https://www.loom.com/share/7abd1b595f3f45df84af4554df90240b?sid=e4dc6143-b658-4b58-b8a6-9bee6af3965f)
+## [DEMO VIDEO](https://www.loom.com/share/0aafd07c96d4462aad02c1f79e889fd4?sid=2155b637-d917-4530-b920-dbf2b4e636ce)
 
 ### AI Plagiarism Detector
 
