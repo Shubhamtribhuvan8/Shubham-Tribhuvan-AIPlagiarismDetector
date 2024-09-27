@@ -1,146 +1,108 @@
-```markdown
 # Shubham-Tribhuvan-AIPlagiarismDetector
 
 ## [Deployment Link](https://shubham-tribhuvan-ai-plagiarism-detector.vercel.app)
 
 ## [DEMO VIDEO](https://www.loom.com/share/7abd1b595f3f45df84af4554df90240b?sid=e4dc6143-b658-4b58-b8a6-9bee6af3965f)
 
-## AI Plagiarism Detector
+### AI Plagiarism Detector
 
-A full-stack AI-powered plagiarism detection platform that allows users to upload documents (PDF, Word) and get real-time plagiarism detection results using ChatGPT/Claude/gowinston.ai. This project demonstrates full-stack development skills by integrating AI tools and React, with deployment on Vercel.
+A full-stack AI-powered plagiarism detection platform that allows users to upload documents (PDF, Word) and get real-time plagiarism detection results using
+ChatGPT/Claude/gowinston.ai. This project demonstrates full-stack development skills by integrating AI tools and React, with deployment on Vercel.
 
 ### Features
 
-- **Real-time Plagiarism Detection**: Upload documents and receive AI-generated plagiarism reports.
-- **AI API Integration**: Powered by ChatGPT/Claude for accurate content analysis.
-- **User-Friendly Interface**: Simple and intuitive UI designed for educational institutions.
-- **Responsive Design**: Fully responsive and works seamlessly on desktop, tablet, and mobile devices.
-- **Downloadable Reports**: Get plagiarism reports with highlighted flagged sections and percentage of plagiarized content.
+- Real-time Plagiarism Detection: Upload documents and receive AI-generated plagiarism reports.
 
-## Frontend Setup (React)
+- AI API Integration: Powered by ChatGPT/Claude for accurate content analysis.
 
-### Prerequisites
+- User-Friendly Interface: Simple and intuitive UI designed for educational institutions.
 
-- **Node.js**: Ensure you have Node.js installed (v16 or above).
-- **npm**: Comes with Node.js; used to install dependencies.
+- Responsive Design: Fully responsive and works seamlessly on desktop, tablet, and mobile devices.
 
-### Installation
+- Downloadable Reports: Get plagiarism reports with highlighted flagged sections and percentage of plagiarized content.
 
-1. Clone the repository:
-```
+### Frontend Setup (React)
 
-git clone [https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector](https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector)
+- Prerequisites
 
-```plaintext
+Node.js: Ensure you have Node.js installed (v16 or above).
 
-2. Navigate to the frontend directory:
-```
+npm: Comes with Node.js; used to install dependencies.
 
-cd ai-plagarism-detector-frontend
+# Installation
 
-```plaintext
+- Clone the repository:
 
-3. Install dependencies:
-```
+`git clone https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector`
 
-npm install
+-Navigate to the frontend directory:
+`cd ai-plagarism-detector-frontend`
 
-```plaintext
+Install dependencies:
+`npm install`
 
-4. Run the React app locally:
-```
+Run the React app locally:
+`npm start`
 
-npm start
+-Frontend Environment Variables:
 
-```plaintext
+- Create a .env file in the frontend directory with the following variables: `REACT_APP_API_URL=http://localhost:8080`
 
-### Frontend Environment Variables
-
-Create a `.env` file in the frontend directory with the following variables:
-```
-
-REACT_APP_API_URL=[http://localhost:8080](http://localhost:8080)
-
-```plaintext
-
-Access the application: The React application should now be running at `http://localhost:3000`.
+- Access the application: The React application should now be running at `http://localhost:3000`.
 
 ### Technologies Used
 
-- **React**: A JavaScript library for building user interfaces.
-- **Axios**: For making API requests.
-- **Tailwind CSS**: For styling and ensuring responsiveness.
+- React: A JavaScript library for building user interfaces.
 
-## Backend Setup (Node.js with AI API Integration)
+- Axios: For making API requests.
+
+- Tailwind CSS: For styling and ensuring responsiveness.
+
+### Backend Setup (Node.js with AI API Integration)
 
 ### Prerequisites
 
-- **Node.js**: Ensure you have Node.js installed (v16 or above).
-- **npm**: Used to install backend dependencies.
-- **OpenAI API Key**: You need an OpenAI API key to integrate ChatGPT for plagiarism detection.
-- **Alternative Setup Using gowinston.ai**: This project can also use gowinston.ai for plagiarism detection.
+- Node.js: Ensure you have Node.js installed (v16 or above).
 
-### Installation
+npm: Used to install backend dependencies.
 
-1. Navigate to the backend directory:
-```
+- OpenAI API Key: You need an OpenAI API key to integrate ChatGPT for plagiarism detection.
 
-cd ai-plagarism-detector-backend
+- Alternative Setup Using gowinston.ai: This project can also use gowinston.ai for plagiarism detection.
 
-```plaintext
+- Created with gowinston.ai:The plagiarism detection system has been integrated using the gowinston.ai API for accuracy and real-time results.
 
-2. Install dependencies:
-```
+# Installation
 
-npm install
+Navigate to the backend directory:
 
-```plaintext
+`cd ai-plagarism-detector-backend`
 
-3. Backend Environment Variables:
-Create a `.env` file in the backend directory with the following variables:
-```
+-Install dependencies:
+`npm install`
+
+- Backend Environment Variables: Create a .env file in the backend directory with the following variables:
 
 PORT=8080
 OPENAI_API_KEY=your_openai_api_key_here
 CLAUDI_API_KEY=
 CHAT_GPT_API_KEY=
-CHAT_GPT_API_URL=[https://api.openai.com/v1/files](https://api.openai.com/v1/files)
-GO_WINSTON_API_KEY=
+CHAT_GPT_API_URL=https://api.openai.com/v1/files
+GO_WINSTON_API_KEY= ```
 
-```plaintext
+Run the Node.js server:
+`npm start`
 
-4. Run the Node.js server:
-```
+\*API Endpoints: The backend server will be running on `http://localhost:8080`.
 
-npm start
+- The main endpoint is: `POST /api/plagiarism-check: Accepts a document (PDF/Word) and returns the plagiarism report using AI processing.`
 
-```plaintext
+### Vercel Deployment
 
-### API Endpoints
+# Deploying to Vercel
 
-The backend server will be running on `http://localhost:8080`.
+- This project has been deployed to Vercel. You can access the live version via this link[https://shubham-tribhuvan-ai-plagiarism-detector-7eo2492du.vercel.app/].
 
-- The main endpoint is:
-- `POST /api/plagiarism-check`: Accepts a document (PDF/Word) and returns the plagiarism report using AI processing.
+- To redeploy or deploy updates, push the changes to the GitHub repository, and Vercel will automatically trigger the deployment.
 
-## Vercel Deployment
-
-### Deploying to Vercel
-
-This project has been deployed to Vercel. You can access the live version via [this link](https://shubham-tribhuvan-ai-plagiarism-detector-7eo2492du.vercel.app/).
-
-To redeploy or deploy updates:
-1. Push the changes to the GitHub repository.
-2. Vercel will automatically trigger the deployment.
-
-Clone the repository:
-```
-
-git clone [https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector](https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector)
-
-```plaintext
-
-## Created with gowinston.ai
-
-The plagiarism detection system has been integrated using the gowinston.ai API for accuracy and real-time results.
-```
+- Clone the repository: `git clone (https://github.com/Shubhamtribhuvan8/Shubham-Tribhuvan-AIPlagiarismDetector)`
